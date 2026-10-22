@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
 # name: discourse-sorting
-# about: Makes the order/ascending sort parameters behave consistently (including /top with a period) and lets the User Portfolio page be sorted through the URL.
-# version: 0.1.0
+# about: Sorting fixes (order/ascending on /top, URL sorting on the User Portfolio page) plus the server side of the optional booru view (tag counts within a search, per-account opt-in).
+# version: 0.2.0
 # authors: Glamurio
 # url: https://github.com/Glamurio/discourse-sorting
 # required_version: 2026.1.0
@@ -11,10 +11,22 @@ enabled_site_setting :discourse_sorting_enabled
 
 module ::DiscourseSorting
   PLUGIN_NAME = "discourse-sorting"
+  BOORU_FIELD = "fluffy_booru"
 end
+
+require_relative "lib/discourse_sorting/engine"
+
+# true / false once the person has chosen, nil while they have not
+register_user_custom_field_type DiscourseSorting::BOORU_FIELD, :boolean
 
 after_initialize do
   require_relative "lib/discourse_sorting/topic_query_extension"
 
   reloadable_patch { TopicQuery.prepend(DiscourseSorting::TopicQueryExtension) }
+
+  add_to_serializer(:current_user, :fluffy_booru) do
+    object.custom_fields[DiscourseSorting::BOORU_FIELD]
+  end
+
+  Discourse::Application.routes.append { mount ::DiscourseSorting::Engine, at: "/discourse-sorting" }
 end

@@ -1,5 +1,7 @@
 en:
   site_settings:
-    discourse_sorting_enabled: "Enable the sorting fixes (explicit order/ascending on /top, URL sorting on the User Portfolio page)."
+    discourse_sorting_enabled: "Enable the sorting fixes and the booru view helpers (explicit order/ascending on /top, URL sorting on the User Portfolio page, tag counts within a search, per-account booru opt-in)."
     discourse_sorting_top_candidates: "When /top is sorted explicitly (for example order=created), the top N topics of the period are selected first and only those are sorted. Higher values reach further back but cost a larger query."
     discourse_sorting_portfolio_params: "Let the User Portfolio page read order and ascending from the URL, for example ?order=created&ascending=true."
+    discourse_sorting_tag_counts_limit: "Most tags returned by the tag counts endpoint (the booru sidebar), highest counts first."
+    discourse_sorting_tag_counts_max_topics: "The tag counts endpoint looks at no more than this many topics of a search. Larger values are exact for broad searches but slower."

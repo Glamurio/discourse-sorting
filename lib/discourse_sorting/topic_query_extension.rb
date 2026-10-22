@@ -46,6 +46,13 @@ module DiscourseSorting
       end
     end
 
+    # The topics a /filter search for `query` would list, without ordering or paging.
+    # Public wrapper around core's private `filter_results`, used by the tag counts.
+    def fluffy_filter_scope(query)
+      scope, _topics_filter = filter_results(query)
+      scope
+    end
+
     private
 
     def fluffy_sort_requested?

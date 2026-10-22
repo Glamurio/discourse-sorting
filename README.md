@@ -1,6 +1,7 @@
 # discourse-sorting
 
-Fixes for sorting problems on FluffyCommunity. Version 0.1.0, **not yet run on a live Discourse** (see "Status").
+Sorting fixes and the server side of the optional booru view for FluffyCommunity. Version 0.2.0, **not yet run on a
+live Discourse** (see "Status").
 
 ## What it does
 
@@ -28,6 +29,24 @@ Allowed `order` values: created, activity, likes, op_likes, views, posts, poster
 The component's own tag and category settings still apply. Turn off with `discourse_sorting_portfolio_params`.
 If the component is not installed, this part does nothing.
 
+### 3. Tag counts within a search (for the booru sidebar)
+
+`GET /discourse-sorting/tag-counts.json?q=<filter query>` returns how often each tag occurs among the topics a
+`/filter` search with that query would list, highest first:
+
+    { "tags": [{ "name": "foal", "count": 212 }, ...], "total_topics": 212, "truncated": false }
+
+The topic set comes from the same code path as `/filter` itself (permissions, muted topics and every filter term
+behave identically). Hidden tags are never returned. Limits: `discourse_sorting_tag_counts_limit` tags and
+`discourse_sorting_tag_counts_max_topics` topics per request; `truncated` is true when a search had more topics
+than that. Open to anonymous visitors, like `/filter`.
+
+### 4. Per-account booru opt-in
+
+`PUT /discourse-sorting/booru` with `enabled=true|false` (login required) stores the person's choice on their
+account. It reaches the client as `currentUser.fluffy_booru`: `true` or `false` once chosen, `null` before. The
+[`fluffybooru`](https://github.com/Glamurio/fluffybooru) theme component reads and writes it.
+
 ## Site settings
 
 | Setting | Default | Meaning |
@@ -35,6 +54,8 @@ If the component is not installed, this part does nothing.
 | `discourse_sorting_enabled` | true | Master switch |
 | `discourse_sorting_top_candidates` | 500 | Size of the ranked set on `/top` when sorted explicitly |
 | `discourse_sorting_portfolio_params` | true | URL sorting on the portfolio page |
+| `discourse_sorting_tag_counts_limit` | 300 | Most tags returned by the tag counts endpoint |
+| `discourse_sorting_tag_counts_max_topics` | 50000 | Most topics the tag counts endpoint examines per search |
 
 ## Install
 
@@ -44,12 +65,19 @@ Add to `containers/app.yml` under `hooks: after_code:` then rebuild:
 
 ## Status
 
-Checked: Ruby and YAML syntax, JS syntax, and the problem itself against the live site's JSON.
+Checked: Ruby and YAML syntax, JS syntax, and the `/top` problem itself against the live site's JSON.
 Not checked: nothing here has been loaded into a running Discourse, and `spec/` has not been run.
-The portfolio part patches a theme component's route and controller from outside, which depends on
-Ember's class lookup; verify it on a staging install first.
+
+Things to verify on a staging install first:
+- The portfolio part patches a theme component's route and controller from outside, which depends on Ember's
+  class lookup.
+- The tag counts endpoint reuses core's private `TopicQuery#filter_results` through a prepended method, and
+  reads topic ids with `pluck`. Compare its numbers against what `/filter` lists for a few searches, and time it on
+  the broadest searches (an empty query examines up to `discourse_sorting_tag_counts_max_topics` topics).
+- That `currentUser.fluffy_booru` appears in `/session/current.json`.
+- The endpoints have no rate limit of their own; add one if the tag counts are hit hard.
 
 ## Not included yet
 
 - A visible sort control on the portfolio page (URL only for now).
-- The booru-style layout; that belongs in a separate repo (theme component).
+- Caching of tag counts.

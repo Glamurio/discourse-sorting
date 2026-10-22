@@ -9,3 +9,11 @@ plugins:
   discourse_sorting_portfolio_params:
     default: true
     client: true
+  discourse_sorting_tag_counts_limit:
+    default: 300
+    min: 20
+    max: 1000
+  discourse_sorting_tag_counts_max_topics:
+    default: 50000
+    min: 1000
+    max: 500000
