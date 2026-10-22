@@ -1,7 +1,8 @@
 import { apiInitializer } from "discourse/lib/api";
 
 // The User Portfolio theme component (discourse/discourse-user-portfolio) builds its
-// topic list in route:user.portfolio and always sends the `order` theme setting,
+// topic list in route:user.portfolio (file routes/user/portfolio) and always sends
+// the `portfolio_order` theme setting,
 // ignoring the page URL. The server already honours `order` and `ascending` on
 // /topics/created-by/:username, so this only forwards them from the URL.
 //
@@ -28,7 +29,7 @@ export default apiInitializer((api) => {
   }
 
   api.modifyClass(
-    "controller:user-portfolio",
+    "controller:user.portfolio",
     (Superclass) =>
       class extends Superclass {
         queryParams = ["order", "ascending"];
@@ -38,7 +39,7 @@ export default apiInitializer((api) => {
   );
 
   api.modifyClass(
-    "route:user-portfolio",
+    "route:user.portfolio",
     (Superclass) =>
       class extends Superclass {
         queryParams = {
