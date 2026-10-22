@@ -1,0 +1,11 @@
+plugins:
+  discourse_sorting_enabled:
+    default: true
+    client: true
+  discourse_sorting_top_candidates:
+    default: 500
+    min: 20
+    max: 5000
+  discourse_sorting_portfolio_params:
+    default: true
+    client: true

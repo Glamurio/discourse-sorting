@@ -1,0 +1,5 @@
+en:
+  site_settings:
+    discourse_sorting_enabled: "Enable the sorting fixes (explicit order/ascending on /top, URL sorting on the User Portfolio page)."
+    discourse_sorting_top_candidates: "When /top is sorted explicitly (for example order=created), the top N topics of the period are selected first and only those are sorted. Higher values reach further back but cost a larger query."
+    discourse_sorting_portfolio_params: "Let the User Portfolio page read order and ascending from the URL, for example ?order=created&ascending=true."
