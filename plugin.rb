@@ -16,11 +16,13 @@ end
 
 require_relative "lib/discourse_sorting/engine"
 
-# true / false once the person has chosen, nil while they have not
-register_user_custom_field_type DiscourseSorting::BOORU_FIELD, :boolean
-
 after_initialize do
   require_relative "lib/discourse_sorting/topic_query_extension"
+
+  # true / false once the person has chosen, nil while they have not.
+  # Must be here, not at the top level: it touches ::User, which does not exist
+  # yet while plugin.rb is first evaluated.
+  register_user_custom_field_type DiscourseSorting::BOORU_FIELD, :boolean
 
   reloadable_patch { TopicQuery.prepend(DiscourseSorting::TopicQueryExtension) }
 
