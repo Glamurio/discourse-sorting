@@ -46,4 +46,59 @@ RSpec.describe DiscourseSorting::TagCountsController do
     get "/discourse-sorting/tag-counts.json"
     expect(response.status).to eq(404)
   end
+
+  describe "tags reserved for groups" do
+    fab!(:member_group) { Fabricate(:group) }
+    fab!(:member) { Fabricate(:user) }
+    fab!(:outsider) { Fabricate(:user) }
+    fab!(:reserved) { Fabricate(:tag, name: "reserved") }
+
+    before do
+      member_group.add(member)
+      # visible to everyone, usable only by member_group
+      Fabricate(
+        :tag_group,
+        permissions: {
+          "everyone" => 3,
+          member_group.name => 1,
+        },
+        tag_names: [reserved.name],
+      )
+    end
+
+    def restricted_names
+      get "/discourse-sorting/tag-counts/restricted.json"
+      response.parsed_body["tags"]
+    end
+
+    it "restricts the tags for people outside the group" do
+      sign_in(outsider)
+      expect(restricted_names).to eq(["reserved"])
+    end
+
+    it "restricts the tags for visitors who are not logged in" do
+      expect(restricted_names).to eq(["reserved"])
+    end
+
+    it "does not restrict them for members" do
+      sign_in(member)
+      expect(restricted_names).to eq([])
+    end
+
+    it "does not restrict them for admins" do
+      sign_in(Fabricate(:admin))
+      expect(restricted_names).to eq([])
+    end
+
+    it "leaves restricted tags out of the counts" do
+      Fabricate(:topic, tags: [reserved])
+      sign_in(outsider)
+      get "/discourse-sorting/tag-counts.json"
+      expect(counts).not_to have_key("reserved")
+
+      sign_in(member)
+      get "/discourse-sorting/tag-counts.json"
+      expect(counts).to have_key("reserved")
+    end
+  end
 end

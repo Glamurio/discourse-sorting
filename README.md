@@ -89,3 +89,8 @@ Counting tags means scanning every topic a search matches, which is the most exp
 ## Not included yet
 
 - A visible sort control on the portfolio page is part of the `fluffybooru` theme component, not this plugin.
+
+
+## Tags reserved for groups
+
+`GET /discourse-sorting/tag-counts/restricted.json` returns the names of tags in tag groups that the current person's groups may not use (the group's permissions list only other groups). `tag-counts` leaves them out too. Admins are never restricted.

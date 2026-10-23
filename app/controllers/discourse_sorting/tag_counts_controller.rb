@@ -28,7 +28,39 @@ module DiscourseSorting
       render json: result
     end
 
+    # GET /discourse-sorting/tag-counts/restricted.json
+    # Names of tags the current person may not use (see restricted_tag_ids). The sidebar
+    # hides these, so tags reserved for members of certain groups are only listed to them.
+    def restricted
+      names = Tag.where(id: restricted_tag_ids).pluck(:name)
+      render json: { tags: names }
+    end
+
     private
+
+    # Tags in a tag group that has permission rows, when none of those rows lets one of
+    # this person's groups (or "everyone") use the tag. Same rule Discourse applies when
+    # tagging. Admins are never restricted. Tags in no tag group, or in a group without
+    # permission rows, are free to everyone.
+    def restricted_tag_ids
+      return [] if current_user&.admin?
+
+      group_ids = [Group::AUTO_GROUPS[:everyone]]
+      group_ids |= current_user.group_ids if current_user
+
+      full = TagGroupPermission.permission_types[:full]
+      with_rules = TagGroupPermission.distinct.pluck(:tag_group_id)
+      allowed =
+        TagGroupPermission.where(group_id: group_ids, permission_type: full).distinct.pluck(
+          :tag_group_id,
+        )
+      blocked = with_rules - allowed
+      return [] if blocked.empty?
+
+      # a tag that also sits in a group this person may use is not restricted
+      TagGroupMembership.where(tag_group_id: blocked).distinct.pluck(:tag_id) -
+        TagGroupMembership.where(tag_group_id: allowed).distinct.pluck(:tag_id)
+    end
 
     def apply_rate_limit
       if current_user
@@ -56,6 +88,7 @@ module DiscourseSorting
 
       counts = TopicTag.where(topic_id: topic_ids)
       hidden_ids = DiscourseTagging.hidden_tags(guardian).pluck(:id)
+      hidden_ids |= restricted_tag_ids
       counts = counts.where.not(tag_id: hidden_ids) if hidden_ids.present?
       counts =
         counts
