@@ -75,9 +75,17 @@ Things to verify on a staging install first:
   reads topic ids with `pluck`. Compare its numbers against what `/filter` lists for a few searches, and time it on
   the broadest searches (an empty query examines up to `discourse_sorting_tag_counts_max_topics` topics).
 - That `currentUser.fluffy_booru` appears in `/session/current.json`.
-- The endpoints have no rate limit of their own; add one if the tag counts are hit hard.
+
+## Load protection on the tag counts endpoint
+
+Counting tags means scanning every topic a search matches, which is the most expensive thing this plugin does
+(about 0.2 s for a normal tag search on the live site, over a second for an empty search). So:
+
+- answers are cached for 5 minutes, separately per logged-in person (what they may see differs) and shared for
+  guests, so the same search clicked again, or by many people, costs one scan;
+- each logged-in person may make 60 requests a minute, and each guest address 30 (staff are exempt). Beyond that
+  the endpoint answers 429; the booru sidebar then keeps showing the site-wide tag list.
 
 ## Not included yet
 
-- A visible sort control on the portfolio page (URL only for now).
-- Caching of tag counts.
+- A visible sort control on the portfolio page is part of the `fluffybooru` theme component, not this plugin.
