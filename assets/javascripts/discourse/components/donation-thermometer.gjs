@@ -58,6 +58,7 @@ export default class DonationThermometer extends Component {
       return new Intl.NumberFormat(undefined, {
         style: "currency",
         currency: this.data.currency,
+        currencyDisplay: "narrowSymbol", // "$", not "US$"
         minimumFractionDigits: whole ? 0 : 2,
         maximumFractionDigits: whole ? 0 : 2,
       }).format(cents / 100);
