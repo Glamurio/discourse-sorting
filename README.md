@@ -143,4 +143,7 @@ Not run against PayPal yet; `spec/requests/donations_spec.rb` stubs the signatur
 - `donations_audience`: `admins` (default), `staff` or `everyone`.
 - Add a donation by hand (for example one that arrived before the webhook existed), inside the container:
   `rake "discourse_sorting:add_donation[5.00,USD]"`, or with a date `rake "discourse_sorting:add_donation[12,EUR,2026-10-28]"`.
+- Refunds: PayPal sends refund events; Ko-fi does not. For Ko-fi, list the month's payments with
+  `rake "discourse_sorting:donations"` and then run `rake "discourse_sorting:refund[kofi:ID]"` (whole payment) or
+  `rake "discourse_sorting:refund[kofi:ID,2.50]"` (part of it).
 
