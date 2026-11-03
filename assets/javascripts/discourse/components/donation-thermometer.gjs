@@ -102,7 +102,16 @@ export default class DonationThermometer extends Component {
       {{#if this.visible}}
         <aside class="donation-thermometer">
           <div class="donation-thermometer__head">
-            <strong class="donation-thermometer__title">{{this.data.title}}</strong>
+            {{#if this.data.url}}
+              <a
+                class="donation-thermometer__title"
+                href={{this.data.url}}
+                target="_blank"
+                rel="noopener noreferrer"
+              ><strong>{{this.data.title}}</strong></a>
+            {{else}}
+              <strong class="donation-thermometer__title">{{this.data.title}}</strong>
+            {{/if}}
             <span class="donation-thermometer__amounts">{{this.progressText}}</span>
             <button
               type="button"
@@ -111,6 +120,23 @@ export default class DonationThermometer extends Component {
               {{on "click" this.hide}}
             >{{icon "xmark"}}</button>
           </div>
+          {{#if this.data.url}}
+            <a
+              class="donation-thermometer__barlink"
+              href={{this.data.url}}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label={{this.data.title}}
+            ><div
+            class="donation-thermometer__bar"
+            role="progressbar"
+            aria-valuemin="0"
+            aria-valuemax="100"
+            aria-valuenow={{this.percent}}
+          >
+            <div class="donation-thermometer__fill" style={{this.fillStyle}}></div>
+          </div></a>
+          {{else}}
           <div
             class="donation-thermometer__bar"
             role="progressbar"
@@ -120,6 +146,7 @@ export default class DonationThermometer extends Component {
           >
             <div class="donation-thermometer__fill" style={{this.fillStyle}}></div>
           </div>
+          {{/if}}
           <div class="donation-thermometer__foot">
             <span>{{this.percentText}}</span>
             {{#if this.data.url}}

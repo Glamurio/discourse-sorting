@@ -15,3 +15,4 @@ en:
     discourse_sorting_paypal_client_secret: "Secret of that PayPal REST app. Hidden; never shown to visitors."
     discourse_sorting_paypal_webhook_id: "ID of the webhook you added in that app, pointing at /discourse-sorting/donations/paypal. Used to verify that webhooks really come from PayPal."
     discourse_sorting_kofi_verification_token: "Verification token from Ko-fi (More > API > Webhooks). Ko-fi webhooks are accepted at /discourse-sorting/donations/kofi only when this matches. Hidden; never shown to visitors."
+    discourse_sorting_donations_audience: "Who sees the thermometer. Start with admins to try it out, then switch to everyone. Webhooks are recorded whatever this is set to."

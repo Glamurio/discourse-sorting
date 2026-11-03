@@ -12,11 +12,23 @@ module DiscourseSorting
 
     def index
       raise Discourse::NotFound if !SiteSetting.discourse_sorting_donations_enabled
+      raise Discourse::NotFound if !audience?
 
       render json: Discourse.cache.fetch("discourse_sorting:donations", expires_in: CACHE_TTL) { summary }
     end
 
     private
+
+    def audience?
+      case SiteSetting.discourse_sorting_donations_audience
+      when "everyone"
+        true
+      when "staff"
+        current_user&.staff?
+      else
+        current_user&.admin?
+      end
+    end
 
     def summary
       now = Time.now.utc

@@ -11,5 +11,14 @@ export default apiInitializer((api) => {
     return;
   }
 
+  const user = api.getCurrentUser();
+  const audience = siteSettings.discourse_sorting_donations_audience;
+  const allowed =
+    audience === "everyone" ||
+    (audience === "staff" ? user?.staff : user?.admin);
+  if (!allowed) {
+    return;
+  }
+
   api.renderInOutlet("discovery-list-container-top", DonationThermometer);
 });

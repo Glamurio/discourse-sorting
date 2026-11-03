@@ -5,6 +5,7 @@ RSpec.describe "Donation tracker" do
   before do
     SiteSetting.discourse_sorting_enabled = true
     SiteSetting.discourse_sorting_donations_enabled = true
+    SiteSetting.discourse_sorting_donations_audience = "everyone"
     SiteSetting.discourse_sorting_donations_currency = "USD"
     SiteSetting.discourse_sorting_donations_goal = 50
     SiteSetting.discourse_sorting_paypal_client_id = "id"
@@ -89,6 +90,20 @@ RSpec.describe "Donation tracker" do
       DiscourseSorting::Donation.create!(paypal_id: "O1", kind: "sale", amount_cents: 700, currency: "USD", paid_at: 2.months.ago)
       get "/discourse-sorting/donations.json"
       expect(response.parsed_body["raised_cents"]).to eq(0)
+    end
+
+    it "is limited to admins until the audience is widened" do
+      SiteSetting.discourse_sorting_donations_audience = "admins"
+      get "/discourse-sorting/donations.json"
+      expect(response.status).to eq(404)
+
+      sign_in(Fabricate(:user))
+      get "/discourse-sorting/donations.json"
+      expect(response.status).to eq(404)
+
+      sign_in(Fabricate(:admin))
+      get "/discourse-sorting/donations.json"
+      expect(response.status).to eq(200)
     end
 
     it "is hidden while the feature is off" do

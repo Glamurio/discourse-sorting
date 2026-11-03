@@ -13,6 +13,18 @@
     gap: 0.25em 0.75em;
   }
 
+  &__title {
+    color: var(--primary);
+  }
+
+  a#{&}__title:hover {
+    color: var(--tertiary);
+  }
+
+  &__barlink {
+    display: block;
+  }
+
   &__amounts {
     color: var(--primary-high);
   }

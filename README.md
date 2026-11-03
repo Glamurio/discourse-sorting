@@ -108,7 +108,7 @@ Endpoints: `GET /discourse-sorting/donations.json` (totals, cached a minute) and
 ### Setup with Ko-fi (no business account needed)
 
 1. On your Ko-fi page: More > API > Webhooks. Set the Webhook URL to `https://<your site>/discourse-sorting/donations/kofi`, copy the **Verification Token** shown there, and save.
-2. Admin > Settings > plugins > search `discourse sorting`: paste the token into `kofi_verification_token` (hidden), set the goal, currency and `donations_url` (your Ko-fi page), then turn `donations_enabled` on.
+2. Admin > Settings > plugins > search `discourse sorting`: paste the token into `kofi_verification_token` (hidden), set the goal, currency and `donations_url` (your Ko-fi page), then turn `donations_enabled` on. `donations_audience` defaults to `admins`, so only admins see the thermometer until you switch it to `staff` or `everyone`.
 3. Ko-fi's webhooks page has a test button; use it, or make a small donation, and check the thermometer. The test payload only counts if its currency matches `donations_currency`.
 
 Donations and memberships count; shop orders and commissions are ignored. Ko-fi sends no refund events and

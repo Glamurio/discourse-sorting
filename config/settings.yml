@@ -20,6 +20,14 @@ plugins:
   discourse_sorting_donations_enabled:
     default: false
     client: true
+  discourse_sorting_donations_audience:
+    default: admins
+    type: enum
+    client: true
+    choices:
+      - admins
+      - staff
+      - everyone
   discourse_sorting_donations_goal:
     default: 50
     min: 1
@@ -34,7 +42,7 @@ plugins:
   discourse_sorting_donations_title:
     default: "Server costs this month"
   discourse_sorting_donations_url:
-    default: ""
+    default: "https://ko-fi.com/fcom"
   discourse_sorting_paypal_mode:
     default: sandbox
     type: enum
