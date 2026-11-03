@@ -29,10 +29,14 @@ export default class DonationThermometer extends Component {
   get visible() {
     return (
       this.siteSettings.discourse_sorting_donations_enabled &&
-      !this.hidden &&
+      !(this.dismissible && this.hidden) &&
       this.data &&
       this.data.goal_cents > 0
     );
+  }
+
+  get dismissible() {
+    return this.siteSettings.discourse_sorting_donations_dismissible;
   }
 
   get percent() {
@@ -71,13 +75,13 @@ export default class DonationThermometer extends Component {
 
   get percentText() {
     return this.reached
-      ? i18n("discourse_sorting.donations.reached")
+      ? this.data.reached_text
       : i18n("discourse_sorting.donations.percent", { percent: this.percent });
   }
 
   @action
   async load() {
-    if (!this.siteSettings.discourse_sorting_donations_enabled || this.hidden) {
+    if (!this.siteSettings.discourse_sorting_donations_enabled) {
       return;
     }
     try {
@@ -113,13 +117,18 @@ export default class DonationThermometer extends Component {
               <strong class="donation-thermometer__title">{{this.data.title}}</strong>
             {{/if}}
             <span class="donation-thermometer__amounts">{{this.progressText}}</span>
-            <button
-              type="button"
-              class="btn-flat donation-thermometer__hide"
-              title={{i18n "discourse_sorting.donations.dismiss"}}
-              {{on "click" this.hide}}
-            >{{icon "xmark"}}</button>
+            {{#if this.dismissible}}
+              <button
+                type="button"
+                class="btn-flat donation-thermometer__hide"
+                title={{i18n "discourse_sorting.donations.dismiss"}}
+                {{on "click" this.hide}}
+              >{{icon "xmark"}}</button>
+            {{/if}}
           </div>
+          {{#if this.data.message}}
+            <p class="donation-thermometer__message">{{this.data.message}}</p>
+          {{/if}}
           {{#if this.data.url}}
             <a
               class="donation-thermometer__barlink"
@@ -155,7 +164,7 @@ export default class DonationThermometer extends Component {
                 href={{this.data.url}}
                 target="_blank"
                 rel="noopener noreferrer"
-              >{{i18n "discourse_sorting.donations.donate"}}</a>
+              >{{this.data.button_text}}</a>
             {{/if}}
           </div>
         </aside>

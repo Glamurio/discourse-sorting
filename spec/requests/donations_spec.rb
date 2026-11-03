@@ -79,15 +79,31 @@ RSpec.describe "Donation tracker" do
 
   describe "GET /discourse-sorting/donations.json" do
     it "reports this month's total and the goal, and nothing about donors" do
-      DiscourseSorting::Donation.create!(paypal_id: "S1", kind: "sale", amount_cents: 1500, currency: "USD", paid_at: Time.now.utc)
+      DiscourseSorting::Donation.create!(paypal_id: "S1", kind: "sale", amount_cents: 1500, currency: "USD", paid_at: Time.now.utc, rate: 1, rate_currency: "USD")
       get "/discourse-sorting/donations.json"
       expect(response.parsed_body).to include("raised_cents" => 1500, "goal_cents" => 5000, "currency" => "USD")
       expect(response.parsed_body.keys).not_to include("donors", "donations")
     end
 
-    it "leaves out other currencies and earlier months" do
-      DiscourseSorting::Donation.create!(paypal_id: "E1", kind: "sale", amount_cents: 900, currency: "EUR", paid_at: Time.now.utc)
-      DiscourseSorting::Donation.create!(paypal_id: "O1", kind: "sale", amount_cents: 700, currency: "USD", paid_at: 2.months.ago)
+    it "converts other currencies into the goal currency" do
+      DiscourseSorting::ExchangeRates.stubs(:rate).with("EUR", "USD").returns(BigDecimal("1.10"))
+      DiscourseSorting::Donation.record(external_id: "E1", kind: "sale", amount: "10.00", currency: "EUR", paid_at: Time.now.utc)
+      get "/discourse-sorting/donations.json"
+      expect(response.parsed_body["raised_cents"]).to eq(1100)
+    end
+
+    it "counts a payment once its rate becomes available" do
+      DiscourseSorting::ExchangeRates.stubs(:rate).with("EUR", "USD").returns(nil)
+      DiscourseSorting::Donation.record(external_id: "E1", kind: "sale", amount: "10.00", currency: "EUR", paid_at: Time.now.utc)
+      expect(DiscourseSorting::Donation.raised_cents).to eq(0)
+
+      DiscourseSorting::ExchangeRates.stubs(:rate).with("EUR", "USD").returns(BigDecimal("1.10"))
+      DiscourseSorting::Donation.convert_pending!
+      expect(DiscourseSorting::Donation.raised_cents).to eq(1100)
+    end
+
+    it "leaves out earlier months" do
+      DiscourseSorting::Donation.create!(paypal_id: "O1", kind: "sale", amount_cents: 700, currency: "USD", paid_at: 2.months.ago, rate: 1, rate_currency: "USD")
       get "/discourse-sorting/donations.json"
       expect(response.parsed_body["raised_cents"]).to eq(0)
     end

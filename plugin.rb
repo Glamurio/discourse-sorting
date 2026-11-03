@@ -21,6 +21,7 @@ require_relative "lib/discourse_sorting/engine"
 after_initialize do
   require_relative "lib/discourse_sorting/topic_query_extension"
   require_relative "lib/discourse_sorting/paypal"
+  require_relative "lib/discourse_sorting/exchange_rates"
 
   # true / false once the person has chosen, nil while they have not.
   # Must be here, not at the top level: it touches ::User, which does not exist

@@ -32,6 +32,11 @@ module DiscourseSorting
 
     def summary
       now = Time.now.utc
+      begin
+        Donation.convert_pending!(now)
+      rescue StandardError => e
+        Rails.logger.warn("[discourse-sorting] converting donations failed: #{e.message}")
+      end
       goal_cents = SiteSetting.discourse_sorting_donations_goal.to_i * 100
       raised = Donation.raised_cents(now)
 
@@ -41,6 +46,9 @@ module DiscourseSorting
         month: now.strftime("%Y-%m"),
         goal_cents: goal_cents,
         raised_cents: raised,
+        message: SiteSetting.discourse_sorting_donations_message.presence,
+        button_text: SiteSetting.discourse_sorting_donations_button_text,
+        reached_text: SiteSetting.discourse_sorting_donations_reached_text,
         url: SiteSetting.discourse_sorting_donations_url.presence,
       }
     end

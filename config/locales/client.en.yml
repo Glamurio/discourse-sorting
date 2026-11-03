@@ -4,6 +4,4 @@ en:
       donations:
         progress: "%{raised} of %{goal}"
         percent: "%{percent}% of this month's goal"
-        reached: "Goal reached this month. Thank you!"
-        donate: "Donate"
         dismiss: "Hide for now"

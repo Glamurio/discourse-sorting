@@ -39,8 +39,19 @@ plugins:
       - USD
       - EUR
       - GBP
+      - CAD
+      - AUD
   discourse_sorting_donations_title:
     default: "Server costs this month"
+  discourse_sorting_donations_message:
+    default: ""
+  discourse_sorting_donations_button_text:
+    default: "Donate"
+  discourse_sorting_donations_reached_text:
+    default: "Goal reached this month. Thank you!"
+  discourse_sorting_donations_dismissible:
+    default: false
+    client: true
   discourse_sorting_donations_url:
     default: "https://ko-fi.com/fcom"
   discourse_sorting_paypal_mode:

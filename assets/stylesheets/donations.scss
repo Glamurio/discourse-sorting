@@ -21,6 +21,11 @@
     color: var(--tertiary);
   }
 
+  &__message {
+    margin: 0.35em 0 0;
+    color: var(--primary-high);
+  }
+
   &__barlink {
     display: block;
   }

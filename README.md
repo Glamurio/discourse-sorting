@@ -130,3 +130,17 @@ If the site is behind Cloudflare, make sure no rule blocks PayPal's requests to 
 
 Not run against PayPal yet; `spec/requests/donations_spec.rb` stubs the signature check.
 
+### Currencies, texts and visibility
+
+- Every payment is tracked. Payments in a currency other than `donations_currency` are converted with the
+  European Central Bank's daily rates (frankfurter.dev, no key). If that service cannot be reached the payment is
+  stored anyway and converted within the hour. The ECB covers about 30 currencies; a payment in anything else
+  stays unconverted (and out of the total) until you add it by hand in the goal currency.
+- Texts: `donations_title`, `donations_message` (optional line under the title), `donations_button_text`,
+  `donations_reached_text`. The "N% of this month's goal" and "X of Y" lines can be edited under Admin >
+  Customize > Text (search `discourse_sorting`).
+- `donations_dismissible` (off by default) adds an X that hides the thermometer for the browser session.
+- `donations_audience`: `admins` (default), `staff` or `everyone`.
+- Add a donation by hand (for example one that arrived before the webhook existed), inside the container:
+  `rake "discourse_sorting:add_donation[5.00,USD]"`, or with a date `rake "discourse_sorting:add_donation[12,EUR,2026-10-28]"`.
+
