@@ -17,3 +17,38 @@ plugins:
     default: 50000
     min: 1000
     max: 500000
+  discourse_sorting_donations_enabled:
+    default: false
+    client: true
+  discourse_sorting_donations_goal:
+    default: 50
+    min: 1
+    max: 100000
+  discourse_sorting_donations_currency:
+    default: USD
+    type: enum
+    choices:
+      - USD
+      - EUR
+      - GBP
+  discourse_sorting_donations_title:
+    default: "Server costs this month"
+  discourse_sorting_donations_url:
+    default: ""
+  discourse_sorting_paypal_mode:
+    default: sandbox
+    type: enum
+    choices:
+      - sandbox
+      - live
+  discourse_sorting_paypal_client_id:
+    default: ""
+  discourse_sorting_paypal_client_secret:
+    default: ""
+    secret: true
+  discourse_sorting_paypal_webhook_id:
+    default: ""
+  discourse_sorting_kofi_verification_token:
+    default: ""
+    secret: true
+

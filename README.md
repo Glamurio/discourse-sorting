@@ -94,3 +94,39 @@ Counting tags means scanning every topic a search matches, which is the most exp
 ## Tags reserved for groups
 
 `GET /discourse-sorting/tag-counts/restricted.json` returns the names of tags in tag groups that the current person's groups may not use (the group's permissions list only other groups). `tag-counts` leaves them out too. Admins are never restricted.
+
+## Donation tracker (Ko-fi or PayPal)
+
+A thermometer above the topic lists shows how much this month's donations cover of a monthly goal (the server
+costs). It shows totals only. Payments reach the site through Ko-fi or PayPal webhooks (use either or both), so no polling and no personal
+data: only amount, date and PayPal's payment id are stored (table `discourse_sorting_donations`).
+
+Endpoints: `GET /discourse-sorting/donations.json` (totals, cached a minute) and
+`POST /discourse-sorting/donations/paypal` (the webhook; every call is verified with PayPal's
+`verify-webhook-signature` before anything is stored).
+
+### Setup with Ko-fi (no business account needed)
+
+1. On your Ko-fi page: More > API > Webhooks. Set the Webhook URL to `https://<your site>/discourse-sorting/donations/kofi`, copy the **Verification Token** shown there, and save.
+2. Admin > Settings > plugins > search `discourse sorting`: paste the token into `kofi_verification_token` (hidden), set the goal, currency and `donations_url` (your Ko-fi page), then turn `donations_enabled` on.
+3. Ko-fi's webhooks page has a test button; use it, or make a small donation, and check the thermometer. The test payload only counts if its currency matches `donations_currency`.
+
+Donations and memberships count; shop orders and commissions are ignored. Ko-fi sends no refund events and
+no event when a membership ends.
+
+### Setup with PayPal (needs a business account)
+
+1. developer.paypal.com → Apps & Credentials. Choose **Sandbox** first. Create an app (Merchant). Copy its Client ID and Secret.
+2. In that app → Webhooks → Add webhook: URL `https://<your site>/discourse-sorting/donations/paypal`, events
+   `PAYMENT.SALE.COMPLETED`, `PAYMENT.CAPTURE.COMPLETED`, `PAYMENT.SALE.REFUNDED`, `PAYMENT.CAPTURE.REFUNDED`.
+   Copy the Webhook ID it shows.
+3. Admin → Settings → plugins → search `discourse sorting`: fill `paypal_mode` (sandbox), `paypal_client_id`,
+   `paypal_client_secret` (hidden), `paypal_webhook_id`, the goal, currency and the donate link, then turn
+   `donations_enabled` on.
+4. Send a test event from the sandbox (or pay with a sandbox buyer account) and check the thermometer.
+5. When it works, repeat 1-3 with a **Live** app and set `paypal_mode` to `live`. Credentials of one mode do not work in the other.
+
+If the site is behind Cloudflare, make sure no rule blocks PayPal's requests to that URL.
+
+Not run against PayPal yet; `spec/requests/donations_spec.rb` stubs the signature check.
+

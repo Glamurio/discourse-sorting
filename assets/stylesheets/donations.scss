@@ -1,0 +1,53 @@
+.donation-thermometer {
+  box-sizing: border-box;
+  margin: 0 0 1em;
+  padding: 0.75em 1em;
+  background: var(--primary-very-low);
+  border: 1px solid var(--primary-low);
+  border-radius: var(--d-border-radius, 4px);
+
+  &__head {
+    display: flex;
+    align-items: baseline;
+    flex-wrap: wrap;
+    gap: 0.25em 0.75em;
+  }
+
+  &__amounts {
+    color: var(--primary-high);
+  }
+
+  &__hide {
+    margin-left: auto;
+    color: var(--primary-medium);
+  }
+
+  &__bar {
+    height: 0.9em;
+    margin: 0.5em 0;
+    overflow: hidden;
+    background: var(--primary-low);
+    border-radius: 0.45em;
+  }
+
+  &__fill {
+    height: 100%;
+    min-width: 0.45em;
+    background: var(--tertiary);
+    border-radius: 0.45em;
+    transition: width 0.6s ease;
+  }
+
+  &__foot {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 0.5em;
+    color: var(--primary-medium);
+  }
+
+  &__donate {
+    margin: 0;
+  }
+}

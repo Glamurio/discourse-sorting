@@ -1,13 +1,15 @@
 # frozen_string_literal: true
 
 # name: discourse-sorting
-# about: Sorting fixes (order/ascending on /top, URL sorting on the User Portfolio page) plus the server side of the optional booru view (tag counts within a search, per-account opt-in).
-# version: 0.2.0
+# about: Sorting fixes (order/ascending on /top, URL sorting on the User Portfolio page) plus the server side of the optional booru view (tag counts within a search, per-account opt-in) and the PayPal donation tracker.
+# version: 0.3.0
 # authors: Glamurio
 # url: https://github.com/Glamurio/discourse-sorting
 # required_version: 2026.1.0
 
 enabled_site_setting :discourse_sorting_enabled
+
+register_asset "stylesheets/donations.scss"
 
 module ::DiscourseSorting
   PLUGIN_NAME = "discourse-sorting"
@@ -18,6 +20,7 @@ require_relative "lib/discourse_sorting/engine"
 
 after_initialize do
   require_relative "lib/discourse_sorting/topic_query_extension"
+  require_relative "lib/discourse_sorting/paypal"
 
   # true / false once the person has chosen, nil while they have not.
   # Must be here, not at the top level: it touches ::User, which does not exist
